@@ -1,7 +1,29 @@
 .container {
     position: absolute;
+    
+}
+
+.MovingContainer {
+    position: absolute;
+    
 }
 
 .Target {
-    position: absolute;
+    user-drag: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
+}
+
+.MovingTarget {
+    user-drag: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
 }

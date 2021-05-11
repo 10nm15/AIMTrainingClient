@@ -1,16 +1,32 @@
 
-// Класс описывает базовые статичные мишени
+// Класс описывает мишени
 class Target {
-    params = {
-        imgRadius: 115,
-        imgName: "js/target/target.png",
-        className: 'Target'
+    //Описание статичной мишени
+    Target = {
+        divName: "container",
+        imgRadius: 80,
+        imgName: "src/target.png",
+        className: "Target"
+    }
+    //Описание движущейся мишени
+    MovingTarget = {
+        divName: "MovingContainer",
+        imgRadius: 60,
+        imgName: "src/MovingTarget.png",
+        className: "MovingTarget"
     }
 
-    constructor(x, y, id, size = 10, params = this.params) {
+    constructor(x, y, id, params, size = 10) {
+        // в зависимости от переданного параметра устанавливаем статичную или динамичную мишень
+        if (params === 'moving') {
+            params = this.MovingTarget;
+        } else {
+            params = this.Target;
+        }
+
         if (!document.getElementById(id)) {
             this.mainDiv = document.createElement('div');
-            this.mainDiv.className = 'container';
+            this.mainDiv.className = params.divName;
             this.mainDiv.id = id;
             this.mainDiv.style.left = (x - params.imgRadius) + "px";
             this.mainDiv.style.top = (y - params.imgRadius) + "px";
@@ -26,30 +42,69 @@ class Target {
         this.x = x;
         this.y = y;
         this.size = size;
+        // если мишень динамическая, то устанавливаем движение
+        if (params.className === 'MovingTarget') {
+            this.move();
+        }
+        // добавляем событие выстрела
         this.mainDiv.addEventListener("click", (event) => {
-            console.log(event);
-            this.shot(event.clientX, event.clientY)
+            this.shot(event.clientX, event.clientY, params);
+            this.mainDiv.removeChild(this.imgId);
         });;
-        console.log(document.body);
     }
 
     //Выстрел по мишени
-    shot(x, y) {
-        let distance = 10 * Math.sqrt(Math.pow((this.x - x), 2) + Math.pow((this.y - y), 2)) / this.params.imgRadius;
+    shot(x, y, params) {
+        let distance = 10 * Math.sqrt(Math.pow((this.x - x), 2) + Math.pow((this.y - y), 2)) / params.imgRadius;
         let result;
-        if (distance < 0.5) {
-            console.log(11);
-            return 11
+        //если статичная
+        if (params.className === 'Target') {
+            if (distance < 0.5) {
+                console.log(11);
+                return 11
+            }
+            if (distance < 10) {
+                result = 10 - Math.trunc(distance) * this.size / 10;
+                console.log(result);
+                return result;
+            }
         }
-        if (distance < 10) {
-            result = 10 - Math.trunc(distance) * this.size / 10;
+        // если динамическая
+        distance *= 0.69;
+        if (distance < 0.2) {
+            console.log(10);
+            return 10
+        }
+        if (distance < 7) {
+            result = 9 - Math.trunc(distance) * this.size / 10;
             console.log(result);
             return result;
         }
     }
     //Движение мишени
-    move(x, y) {
-        this.x = x;
-        this.y = y;
+    move() {
+        // задаём случайные координаты для мишени 
+        let x = Math.round(50 + Math.random() * window.innerWidth * 0.85);
+        let y = Math.round(50 + Math.random() * window.innerHeight * 0.75);
+
+        // задаём смещение по осям
+        let dx = (x - this.x) / 250;
+        let dy = (y - this.y) / 250;
+
+        //изменяем координаты центра через малые промежутки времени
+        let timerId = setInterval(() => {
+            this.x += dx;
+            this.y += dy;
+            // колдовство О_0
+            requestAnimationFrame(() => {
+                this.mainDiv.style.left = this.x - this.MovingTarget.imgRadius + "px";
+                this.mainDiv.style.top = this.y - this.MovingTarget.imgRadius + "px";
+            });
+        }, 20);
+
+        // Прекращаем движение в одну сторону и заново рекурсивно вызываем функцию!
+        //                                         вот тута
+        //                                          |||
+        setTimeout(() => { clearInterval(timerId); this.move(); }, 3000);
     }
 }

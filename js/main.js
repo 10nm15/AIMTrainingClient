@@ -8,7 +8,7 @@ window.requestAnimFrame = (function () {
             window.setTimeout(callback, 1000 / 60);
         };
 })();
-
+// счётчик
 function makeCounter() {
     let count = 0;
     return function () {
@@ -16,14 +16,44 @@ function makeCounter() {
     }
 };
 
+function calcCoord({ x, y }, coord = []) {
+    if (coord.length === 0) {
+        return true;
+    }
+    coord.forEach(coords => {
+        if (Math.abs(coords.x - x) < 300 || Math.abs(coords.y - y) < 300) {
+            return false;
+        }
+    });
+}
+
+//функция создания мишени
+function createTarget(params) {
+    let count = counter();
+    // случайно задаём координаты
+    x = Math.round(75 + Math.random() * window.innerWidth * 0.85);
+    y = Math.round(75 + Math.random() * window.innerHeight * 0.75);
+    // создаём мишень
+    target = new Target(x, y, count, params);
+}
+
 let counter = makeCounter();
 
 window.onload = function () {
-    for (let i = 0; i < 3; i++) {
-        let count = counter();
-        x = Math.round(Math.random() * window.innerWidth * 0.8);
-        y = Math.round(Math.random() * window.innerHeight * 0.67);
-        target = new Target(100 + x, 100 + y, count);
-        //console.log(x,y);
+    // стартовые мишени
+    for (let i = 0; i < 2; i++) {
+        if (i % 2 === 0) {
+            createTarget();
+        } else {
+            createTarget('moving');
+        }
     }
+
+    // может быть понадобится(нет)
+    /*let targets = document.getElementsByClassName('Movingcontainer');
+    console.log(targets);*/
+
+
+    //создание движущихся мишеней
+    setInterval(() => createTarget('moving'), 2500);
 }
