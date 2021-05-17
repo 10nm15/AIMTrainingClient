@@ -10,11 +10,13 @@ class Target {
     }
     //Описание движущейся мишени
     MovingTarget = {
-        divName: "MovingContainer",
+        divName: "container",
         imgRadius: 60,
         imgName: "src/MovingTarget.png",
         className: "MovingTarget"
     }
+
+    MouseOver = false;
 
     constructor(x, y, id, params, size = 10) {
         // в зависимости от переданного параметра устанавливаем статичную или динамичную мишень
@@ -28,8 +30,8 @@ class Target {
             this.mainDiv = document.createElement('div');
             this.mainDiv.className = params.divName;
             this.mainDiv.id = id;
-            this.mainDiv.style.left = (x - params.imgRadius) + "px";
-            this.mainDiv.style.top = (y - params.imgRadius) + "px";
+            this.mainDiv.style.left = (x - params.imgRadius - 7) + "px";
+            this.mainDiv.style.top = (y - params.imgRadius - 7) + "px";
             document.body.appendChild(this.mainDiv);
         }
         this.imgId = document.createElement('img');
@@ -45,40 +47,49 @@ class Target {
         // если мишень динамическая, то устанавливаем движение
         if (params.className === 'MovingTarget') {
             this.move();
-        }
+        };
         // добавляем событие выстрела
         this.mainDiv.addEventListener("click", (event) => {
-            this.shot(event.clientX, event.clientY, params);
+            count += this.shot(event.clientX, event.clientY, params);
+            console.log(count);
             this.mainDiv.removeChild(this.imgId);
-        });;
+        });
+
+        if (params.className === "Target") {
+            this.mainDiv.addEventListener("mouseover",() => {
+                this.flinch(params.imgRadius);
+            });
+        }
     }
 
     //Выстрел по мишени
     shot(x, y, params) {
-        let distance = 10 * Math.sqrt(Math.pow((this.x - x), 2) + Math.pow((this.y - y), 2)) / params.imgRadius;
+        let distance = 10 * Math.sqrt(Math.pow((this.x - x - 16), 2) + Math.pow((this.y - y - 16), 2)) / params.imgRadius;
         let result;
         //если статичная
         if (params.className === 'Target') {
             if (distance < 0.5) {
-                console.log(11);
                 return 11
             }
-            if (distance < 10) {
+            if (distance <= 10) {
                 result = 10 - Math.trunc(distance) * this.size / 10;
-                console.log(result);
                 return result;
+            }
+            if (distance > 10) {
+                return 0;
             }
         }
         // если динамическая
         distance *= 0.69;
         if (distance < 0.2) {
-            console.log(10);
             return 10
         }
-        if (distance < 7) {
+        if (distance <= 7) {
             result = 9 - Math.trunc(distance) * this.size / 10;
-            console.log(result);
             return result;
+        }
+        if (distance > 7) {
+            return 0;
         }
     }
     //Движение мишени
@@ -106,5 +117,25 @@ class Target {
         //                                         вот тута
         //                                          |||
         setTimeout(() => { clearInterval(timerId); this.move(); }, 3000);
+    }
+
+    flinch(imgRadius) {
+        let dx = 2 - Math.random() * 4;
+        let dy = 2 - Math.random() * 4;
+        let timerId = setInterval(() => {
+            requestAnimationFrame(() => {
+                this.mainDiv.style.left = dx + this.x - imgRadius - 7 + "px";
+                this.mainDiv.style.top = dy + this.y - imgRadius - 7 + "px";
+            });
+
+            setTimeout(() => {
+                requestAnimationFrame(() => {
+                    this.mainDiv.style.left = -dx + this.x - imgRadius - 7 + "px";
+                    this.mainDiv.style.top = -dy + this.y - imgRadius - 7 + "px";
+                });
+            }, 50);
+        }, 110);
+
+        setTimeout(clearInterval(timerId), 2000);
     }
 }
