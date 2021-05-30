@@ -118,24 +118,4 @@ class Target {
         //                                          |||
         setTimeout(() => { clearInterval(timerId); this.move(); }, 3000);
     }
-
-    flinch(imgRadius) {
-        let dx = 2 - Math.random() * 4;
-        let dy = 2 - Math.random() * 4;
-        let timerId = setInterval(() => {
-            requestAnimationFrame(() => {
-                this.mainDiv.style.left = dx + this.x - imgRadius - 7 + "px";
-                this.mainDiv.style.top = dy + this.y - imgRadius - 7 + "px";
-            });
-
-            setTimeout(() => {
-                requestAnimationFrame(() => {
-                    this.mainDiv.style.left = -dx + this.x - imgRadius - 7 + "px";
-                    this.mainDiv.style.top = -dy + this.y - imgRadius - 7 + "px";
-                });
-            }, 50);
-        }, 110);
-
-        setTimeout(clearInterval(timerId), 2000);
-    }
 }

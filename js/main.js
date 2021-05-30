@@ -39,46 +39,59 @@ function createTarget(params) {
 
 let count = 0;
 
+let IsTraining = false;
+
 let counter = makeCounter();
 
 window.onload = function () {
 
     document.getElementById("startStatic").addEventListener("click", () => {
-        count = 0;
-        createTarget();
-        createTarget();
-        let timerId = setInterval(() => {
+        if (!IsTraining) {
+            IsTraining = true;
+            count = 0;
             createTarget();
-        }, 1000);
-        setTimeout(() => {
-            clearInterval(timerId);
-            //удаляем оставшиеся элементы
-            var targets = document.getElementsByClassName('container');
-            while (targets[0]) {
-                targets[0].parentNode.removeChild(targets[0]);
-            }
-            //вывод результата
-            alert(`Вы набрали ${count} очков!`);
-        }, 10000);
+            createTarget();
+            let timerId = setInterval(() => {
+                createTarget();
+            }, 1000);
+            setTimeout(() => {
+                clearInterval(timerId);
+                //удаляем оставшиеся элементы
+                var targets = document.getElementsByClassName('container');
+                while (targets[0]) {
+                    targets[0].parentNode.removeChild(targets[0]);
+                }
+                IsTraining = false;
+                //вывод результата
+                alert(`Вы набрали ${count} очков!`);
+            }, 10000);
+        } else {
+            alert("Тренировка идёт в данный момент");
+        }
     });
 
     document.getElementById("startMoving").addEventListener("click", () => {
-        count = 0;
-        createTarget('moving');
-        createTarget('moving');
-        let timerId = setInterval(() => {
+        if (!IsTraining) {
+            IsTraining = true;
+            count = 0;
             createTarget('moving');
-        }, 750);
-        setTimeout(() => {
-            clearInterval(timerId);
-            //удаляем оставшиеся элементы
-            var targets = document.getElementsByClassName('container');
-            while (targets[0]) {
-                targets[0].parentNode.removeChild(targets[0]);
-            }
-            //вывод результата
-            alert(`Вы набрали ${count} очков!`);
-        }, 10000);
-        count = 0;
+            createTarget('moving');
+            let timerId = setInterval(() => {
+                createTarget('moving');
+            }, 750);
+            setTimeout(() => {
+                clearInterval(timerId);
+                //удаляем оставшиеся элементы
+                var targets = document.getElementsByClassName('container');
+                while (targets[0]) {
+                    targets[0].parentNode.removeChild(targets[0]);
+                }
+                IsTraining = false;
+                //вывод результата
+                alert(`Вы набрали ${count} очков!`);
+            }, 10000);
+        } else {
+            alert("Тренировка идёт в данный момент");
+        }
     });
 }
