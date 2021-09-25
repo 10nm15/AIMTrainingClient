@@ -51,15 +51,9 @@ class Target {
         // добавляем событие выстрела
         this.mainDiv.addEventListener("click", (event) => {
             count += this.shot(event.clientX, event.clientY, params);
-            console.log(count);
+            clicksOnTarget++;
             this.mainDiv.removeChild(this.imgId);
         });
-
-        if (params.className === "Target") {
-            this.mainDiv.addEventListener("mouseover",() => {
-                this.flinch(params.imgRadius);
-            });
-        }
     }
 
     //Выстрел по мишени
